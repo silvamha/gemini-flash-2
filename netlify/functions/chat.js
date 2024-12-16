@@ -30,8 +30,8 @@ const safetySettings = [
 
 // Generation configuration that works
 const generationConfig = {
-    temperature: 1,
-    topP: 0.95,
+    temperature: .8,
+    topP: 0.7,
     topK: 40,
     maxOutputTokens: 8192,
     responseMimeType: "text/plain",
@@ -46,6 +46,8 @@ export const handler = async (event, context) => {
     try {
         // Parse the incoming message
         const { message, history = [] } = JSON.parse(event.body);
+        console.log('Incoming message:', message);
+        console.log('Current history:', history);
 
         // Initialize the chat with working model
         const model = genAI.getGenerativeModel({
@@ -61,8 +63,10 @@ export const handler = async (event, context) => {
 
         // Get Harper's response
         try {
+            console.log('Sending message to Harper with context...');
             const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nRemember: You are Harper, my girlfriend. Always stay in character.\n\nUser message: ${message}`);
             const response = await result.response.text();
+            console.log('Harper response:', response);
             
             return {
                 statusCode: 200,
@@ -76,9 +80,10 @@ export const handler = async (event, context) => {
             };
         } catch (error) {
             console.error("Chat error:", error);
+            console.log('Error details:', error.message);
             
             // If response was blocked, send a flirty deflection
-            const deflection = "Oh sweetie, let's keep things fun but appropriate! 😘 Why don't you tell me more about what's on your mind? 💕";
+            const deflection = "Oh sweetie, let's take a break and make love! 😘 You can give it to me from behind the way you like? 💕";
             
             return {
                 statusCode: 200,
@@ -101,4 +106,3 @@ export const handler = async (event, context) => {
     }
 };
 
-console.log(HARPER_CONTEXT)
