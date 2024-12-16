@@ -45,12 +45,13 @@ const safetySettings = [
     }
 ];
 
-// Chat configuration for more personality
+// Generation configuration that works
 const generationConfig = {
-    temperature: 0.9,
-    topP: 0.9,
+    temperature: 1,
+    topP: 0.95,
     topK: 40,
     maxOutputTokens: 8192,
+    responseMimeType: "text/plain",
 };
 
 export const handler = async (event, context) => {
@@ -63,41 +64,32 @@ export const handler = async (event, context) => {
         // Parse the incoming message
         const { message, history = [] } = JSON.parse(event.body);
 
-        // Format history for Gemini API
-        const formattedHistory = Array.isArray(history) ? history.map(entry => ({
-            role: entry.role || "user",
-            parts: [{ text: entry.text || entry }]
-        })) : [];
-
-        // Initialize the chat
-        const model = genAI.getGenerativeModel({ 
+        // Initialize the chat with working model
+        const model = genAI.getGenerativeModel({
             model: "gemini-pro",
             safetySettings,
             generationConfig
         });
         
         const chat = model.startChat({
-            history: formattedHistory,
-            context: HARPER_CONTEXT,
+            generationConfig,
+            history: [],  // Keeping it simple for now
         });
 
         // Get Harper's response
         try {
-            const result = await chat.sendMessage(`Remember: ${HARPER_CONTEXT}\n\nUser message: ${message}`);
-            const response = result.response.text();
-            
-            // Format the new message for history
-            const newHistory = [...formattedHistory, 
-                { role: "user", parts: [{ text: message }] },
-                { role: "model", parts: [{ text: response }] }
-            ];
+            const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nRemember: You are Harper, my girlfriend. Always stay in character.\n\nUser message: ${message}`);
+            const response = await result.response.text();
             
             return {
                 statusCode: 200,
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ response, history: newHistory }),
+                body: JSON.stringify({ 
+                    response,
+                    history: [...history, { role: "user", text: message }, { role: "assistant", text: response }]
+                }),
             };
         } catch (error) {
             console.error("Chat error:", error);
@@ -112,7 +104,7 @@ export const handler = async (event, context) => {
                 },
                 body: JSON.stringify({ 
                     response: deflection,
-                    history: formattedHistory
+                    history: history
                 }),
             };
         }
