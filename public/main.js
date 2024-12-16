@@ -7,7 +7,14 @@ const messagesContainer = document.getElementById('chat-messages');
 const loadingIndicator = document.getElementById('loading');
 
 // Chat history
-let chatHistory = JSON.parse(localStorage.getItem('chatHistory')) || [];
+let chatHistory = [];
+try {
+    const saved = localStorage.getItem('chatHistory');
+    chatHistory = saved ? JSON.parse(saved) : [];
+} catch (e) {
+    console.error('Error loading chat history:', e);
+    chatHistory = [];
+}
 
 // Theme Toggle
 function toggleTheme() {
@@ -32,11 +39,13 @@ function addMessage(text, isUser = false) {
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
     
-    // Add to history with proper format
-    chatHistory.push({
+    // Add to history with consistent format
+    const message = {
         role: isUser ? "user" : "model",
         parts: [{ text }]
-    });
+    };
+    chatHistory.push(message);
+    localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
 }
 
 // Show/hide loading indicator
@@ -102,3 +111,5 @@ userInput.addEventListener('keypress', (e) => {
         sendMessage();
     }
 });
+
+console.log('History to save:', chatHistory);

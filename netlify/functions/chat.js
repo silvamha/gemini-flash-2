@@ -75,7 +75,10 @@ export const handler = async (event, context) => {
                 },
                 body: JSON.stringify({ 
                     response,
-                    history: [...history, { role: "user", text: message }, { role: "assistant", text: response }]
+                    history: [...history, 
+                        { role: "user", parts: [{ text: message }] }, 
+                        { role: "model", parts: [{ text: response }] }
+                    ]
                 }),
             };
         } catch (error) {
@@ -105,4 +108,3 @@ export const handler = async (event, context) => {
         };
     }
 };
-
