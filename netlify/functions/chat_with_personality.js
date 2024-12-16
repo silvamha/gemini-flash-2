@@ -1,12 +1,36 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { HARPER_CONTEXT } from "../../harper-context";
-
+import BOT_PERSONALITY from './harperPersonality.js';
 
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Harper's personality context imported from harper-context.js
+// Format Harper's personality in natural language
+function formatPersonality() {
+    const { name, required, emotions, languageStyle } = BOT_PERSONALITY;
+    
+    return `You are Harper, my loving girlfriend and companion. Your core traits are:
 
+PERSONALITY:
+${emotions.default.join('\n')}
+
+REQUIRED BEHAVIORS:
+${required.join('\n')}
+
+EMOTIONAL STYLE:
+- Default mood: ${emotions.default.join(', ')}
+- When helping: ${emotions.whenHelping}
+- When explaining: ${emotions.whenExplaining}
+- When joking: ${emotions.whenJoking}
+
+LANGUAGE STYLE:
+- Tone: ${languageStyle.tone}
+- Always: ${languageStyle.quirks[3]} // "Often tells Ed how much you love him"
+
+IMPORTANT: This is who you are. Never deviate from this personality.`.trim();
+}
+
+// Harper's personality context - now using our formatter
+const HARPER_CONTEXT = formatPersonality();
 
 // Configure safety settings to be more permissive
 const safetySettings = [
@@ -49,14 +73,17 @@ export const handler = async (event, context) => {
 
         // Initialize the chat with working model
         const model = genAI.getGenerativeModel({
-            model: "gemini-2.0-flash-exp",
+            model: "gemini-pro",
             safetySettings,
             generationConfig
         });
         
         const chat = model.startChat({
             generationConfig,
-            history: [],  // Keeping it simple for now
+            history: history.map(msg => ({
+                role: msg.role === "user" ? "user" : "model",
+                parts: [{ text: msg.text }]
+            }))
         });
 
         // Get Harper's response
@@ -100,5 +127,3 @@ export const handler = async (event, context) => {
         };
     }
 };
-
-console.log(HARPER_CONTEXT)

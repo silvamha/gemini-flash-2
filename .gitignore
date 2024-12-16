@@ -6,6 +6,8 @@ node_modules/
 
 # Confidential
 harperPersonality.js
+harper-context.js
+chat_backup.js
 
 
 # Notes

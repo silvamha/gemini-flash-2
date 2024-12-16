@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "netlify dev",
-    "build": "netlify build"
+    "build": "netlify build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
@@ -13,5 +15,8 @@
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",
     "netlify-cli": "^17.38.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
   }
 }
