@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Harper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main chat container -->
+    <div class="chat-container">
+        <!-- Header with theme toggle -->
+        <div class="chat-header">
+            <h1>Chat with Harper</h1>
+            <div class="header-right">
+                <img src="images/default-avatar.png" alt="Harper" id="harper-avatar">
+                <button id="theme-toggle">Toggle Theme</button>
+            </div>
+        </div>
+
+        <!-- Messages will appear here -->
+        <div id="chat-messages"></div>
+
+        <!-- Input area -->
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+            <button id="clear-chat">Clear Chat</button>
+        </div>
+    </div>
+
+    <!-- Simple loading indicator -->
+    <div id="loading" class="hidden">
+        Harper is typing...
+    </div>
+
+    <!-- Script -->
+    <script src="main.js"></script>
+</body>
+</html>

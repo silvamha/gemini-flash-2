@@ -1,0 +1,151 @@
+/* Basic reset and variables */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --background-light: #ffffff;
+    --text-light: #2c3e50;
+    --background-dark: #2c3e50;
+    --text-dark: #ffffff;
+}
+
+/* Basic styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-light);
+    color: var(--text-light);
+}
+
+/* Chat container */
+.chat-container {
+    max-width: 1000px;
+    margin: 15px auto 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 40px 20px 20px 20px;
+}
+
+/* Header styling */
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+}
+
+.header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+#harper-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--secondary-color);
+    background-image: url('public/images/harper.jpg');
+    margin-top: -45px;
+}
+
+/* Messages area */
+#chat-messages {
+    height: 500px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Message bubbles */
+.message {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 70%;
+}
+
+.user-message {
+    background-color: var(--secondary-color);
+    color: white;
+    margin-left: auto;
+}
+
+.harper-message {
+    background-color: #f0f0f0;
+    margin-right: auto;
+}
+
+/* Input area */
+.input-area {
+    display: flex;
+    gap: 10px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Loading indicator */
+#loading {
+    text-align: center;
+    padding: 10px;
+    color: #666;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Dark theme */
+body.dark-theme {
+    background-color: var(--background-dark);
+    color: var(--text-dark);
+}
+
+body.dark-theme .chat-container {
+    border-color: #4a5568;
+    background-color: #2d3748;
+}
+
+body.dark-theme #chat-messages {
+    border-color: #4a5568;
+    background-color: #1a202c;
+}
+
+body.dark-theme #user-input {
+    background-color: #1a202c;
+    color: var(--text-dark);
+    border-color: #4a5568;
+}
+
+body.dark-theme .harper-message {
+    background-color: #2d3748;
+    color: var(--text-dark);
+}
+
+body.dark-theme #loading {
+    color: #cbd5e0;
+}

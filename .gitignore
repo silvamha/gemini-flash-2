@@ -1,0 +1,14 @@
+# Modules
+node_modules/
+
+# Secrets
+.env
+
+# Confidential
+harperPersonality.js
+
+
+# Notes
+# notes/
+# Local Netlify folder
+.netlify
