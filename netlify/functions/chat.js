@@ -58,7 +58,11 @@ export const handler = async (event, context) => {
         
         const chat = model.startChat({
             generationConfig,
-            history: [],  // Keeping it simple for now
+            // Keeping it simple for now
+            // history: [],  
+
+            // Gemini-Flash ==> Self Repair
+            history: history, // Use the received history here!
         });
 
         // Get Harper's response
@@ -67,6 +71,12 @@ export const handler = async (event, context) => {
             const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nRemember: You are Harper, my girlfriend. Always stay in character.\n\nUser message: ${message}`);
             const response = await result.response.text();
             console.log('Harper response:', response);
+
+            // Gemini Flash ==> Self Repair
+            const updatedHistory = [...history, 
+                    { role: "user", parts: [{ text: message }] }, 
+                    { role: "model", parts: [{ text: response }] }
+                ]
             
             return {
                 statusCode: 200,
@@ -75,10 +85,15 @@ export const handler = async (event, context) => {
                 },
                 body: JSON.stringify({ 
                     response,
-                    history: [...history, 
-                        { role: "user", parts: [{ text: message }] }, 
-                        { role: "model", parts: [{ text: response }] }
-                    ]
+                    // history: [...history, 
+                    //     { role: "user", parts: [{ text: message }] }, 
+                    //     { role: "model", parts: [{ text: response }] }
+                    // ]
+
+                    // Gemini Flash ==> Self Repair
+                    // Send the updated history back
+                    history: updatedHistory 
+
                 }),
             };
         } catch (error) {
