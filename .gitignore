@@ -14,3 +14,9 @@ chat_backup.js
 # notes/
 # Local Netlify folder
 .netlify
+
+# windsurf rules
+.windsurfrules
+
+# EXAMPLE WORKING CODE
+gemni-flash-1/
