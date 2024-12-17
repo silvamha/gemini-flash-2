@@ -42,15 +42,36 @@ body {
     margin-top: 15px;
 }
 
-#harper-avatar {
+/* #harper-avatar {
     width: 150px;
     height: 150px;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid var(--secondary-color);
-    background-image: url('public/images/harper.jpg');
-    margin-top: -45px;
+    background-image: url("public/images/harper.jpg");
+    margin-top: -50px;
+} */
+
+#harper-avatar {
+    width: 150px;                     /* Fixed container size */
+    height: 150px;
+    border-radius: 50%;               /* Circular container */
+    border: 3px solid var(--secondary-color);
+    object-fit: cover;                /* Prevents squashing */
+    object-position: center 25%;          /* Centers the image */
+    transform: scale(0.95);           /* Scales the image smaller without altering the container */
+    overflow: hidden;                 /* Ensures no parts of the image exceed the container */
 }
+
+
+
+
+
+
+
+
+
+
 
 /* Messages area */
 #chat-messages {
