@@ -2,13 +2,21 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { HARPER_CONTEXT } from "../../harper-context";
 import outputService from '../../services/outputService.js';
 
-
-
 // Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// Harper's personality context imported from harper-context.js
-
+// Helper function to detect sound engineering content
+const isSoundEngineeringContent = (message) => {
+    const keywords = [
+        'eq', 'equalizer', 'compression', 'reverb', 'delay',
+        'mixing', 'mastering', 'frequency', 'audio',
+        'db', 'decibel', 'gain', 'volume', 'pan',
+        'effects', 'plugin', 'daw', 'recording'
+    ];
+    return keywords.some(keyword => 
+        message.toLowerCase().includes(keyword)
+    );
+};
 
 // Configure safety settings to be more permissive
 const safetySettings = [
@@ -60,11 +68,7 @@ export const handler = async (event, context) => {
         
         const chat = model.startChat({
             generationConfig,
-            // Keeping it simple for now
-            // history: [],  
-
-            // Gemini-Flash ==> Self Repair
-            history: history, // Use the received history here!
+            history: history,
         });
 
         // Get Harper's response
@@ -74,11 +78,27 @@ export const handler = async (event, context) => {
             const response = await result.response.text();
             console.log('Harper response:', response);
 
-            // Gemini Flash ==> Self Repair
+            // Save sound engineering outputs to database
+            if (isSoundEngineeringContent(message) || isSoundEngineeringContent(response)) {
+                const metadata = {
+                    userMessage: message,
+                    timestamp: new Date().toISOString(),
+                    context: history.slice(-5) // Keep last 5 messages for context
+                };
+                
+                await outputService.saveOutput(
+                    'sound_engineering',
+                    response,
+                    metadata
+                );
+                console.log('Saved sound engineering output to database');
+            }
+
+            // Update chat history
             const updatedHistory = [...history, 
-                    { role: "user", parts: [{ text: message }] }, 
-                    { role: "model", parts: [{ text: response }] }
-                ]
+                { role: "user", parts: [{ text: message }] }, 
+                { role: "model", parts: [{ text: response }] }
+            ];
             
             return {
                 statusCode: 200,
@@ -87,33 +107,14 @@ export const handler = async (event, context) => {
                 },
                 body: JSON.stringify({ 
                     response,
-                    // history: [...history, 
-                    //     { role: "user", parts: [{ text: message }] }, 
-                    //     { role: "model", parts: [{ text: response }] }
-                    // ]
-
-                    // Gemini Flash ==> Self Repair
-                    // Send the updated history back
                     history: updatedHistory 
-
                 }),
             };
         } catch (error) {
             console.error("Chat error:", error);
-            console.log('Error details:', error.message);
-            
-            // If response was blocked, send a flirty deflection
-            const deflection = "Oh sweetie, let's take a break and make love! 😘 You can give it to me from behind the way you like? 💕";
-            
             return {
-                statusCode: 200,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ 
-                    response: deflection,
-                    history: history
-                }),
+                statusCode: 500,
+                body: JSON.stringify({ error: "Something went wrong" }),
             };
         }
 

@@ -13,10 +13,13 @@ chat_backup.js
 # Notes
 # notes/
 # Local Netlify folder
-.netlify
+.netlify/
 
 # windsurf rules
 .windsurfrules
 
 # EXAMPLE WORKING CODE
 gemni-flash-1/
+
+# EDSON'S EYES ONLY
+GUNK/
