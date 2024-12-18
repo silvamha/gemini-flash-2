@@ -1,0 +1,65 @@
+[33mcommit 103405e893245dc1555a070bb4229d0f8937856c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Tue Dec 17 19:10:31 2024 -0500
+
+    db working - app fully functional up to this point
+
+[33mcommit 1b0ae7d118b5d2708e53db914f8b7daa814c9cee[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Tue Dec 17 16:28:05 2024 -0500
+
+    added db - db not working - code still working
+
+[33mcommit 3989856f048d94b88c5d0e1ebc4246415d000dd0[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Tue Dec 17 15:17:11 2024 -0500
+
+    code works to this point - implementing and testing db after this.
+
+[33mcommit 1fae20cab30bfc7bff46955bf169ff4ac7ddfe74[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Tue Dec 17 11:21:59 2024 -0500
+
+    db implementation -fully working app to this point
+
+[33mcommit ea4fcb7f646047dbd8204cfc332c050c6b654427[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Tue Dec 17 10:04:01 2024 -0500
+
+    removed v1 working code to this point
+
+[33mcommit a33df5c2e81485e2186271960a132f92340e3bd9[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 19:00:53 2024 -0500
+
+    fixed localStorage
+
+[33mcommit fd0970287125ef9d0c62622ddf0da232bcecc4e8[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 15:14:02 2024 -0500
+
+    prior to gemini self repair
+
+[33mcommit 2fbd22e7bb875a05ec25243aa665255bca2b3ad3[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 13:17:53 2024 -0500
+
+    working before fixing user variable discrepancy
+
+[33mcommit 113d4ae208140221ca9080cbcb2ef4ba0ebc7893[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 12:49:27 2024 -0500
+
+    code still working to this point added attributes export
+
+[33mcommit af99ae839887313bf2eca537ff877b7042513a40[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 10:31:57 2024 -0500
+
+    working to this point
+
+[33mcommit 3afd97e89f8d5550103607e5862456458d070e8e[m
+Author: Ed <silva.email@yahoo.com>
+Date:   Mon Dec 16 09:19:57 2024 -0500
+
+    initial commit

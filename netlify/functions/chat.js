@@ -13,7 +13,7 @@ const isSoundEngineeringContent = (message) => {
         'db', 'decibel', 'gain', 'volume', 'pan',
         'effects', 'plugin', 'daw', 'recording'
     ];
-    return keywords.some(keyword => 
+    return keywords.some(keyword =>
         message.toLowerCase().includes(keyword)
     );
 };
@@ -65,7 +65,7 @@ export const handler = async (event, context) => {
             safetySettings,
             generationConfig
         });
-        
+
         const chat = model.startChat({
             generationConfig,
             history: history,
@@ -85,7 +85,7 @@ export const handler = async (event, context) => {
                     timestamp: new Date().toISOString(),
                     context: history.slice(-5) // Keep last 5 messages for context
                 };
-                
+
                 await outputService.saveOutput(
                     'sound_engineering',
                     response,
@@ -95,18 +95,24 @@ export const handler = async (event, context) => {
             }
 
             // Update chat history
-            const updatedHistory = [...history, 
-                { role: "user", parts: [{ text: message }] }, 
-                { role: "model", parts: [{ text: response }] }
+            const updatedHistory = [...history,
+            { role: "user", parts: [{ text: message }] },
+            { role: "model", parts: [{ text: response }] }
             ];
-            
+
             // Save all messages to chat_history
-            const db = await import('../../data/db.js');
-            const stmt = db.default.prepare(`
-                INSERT INTO chat_history (role, content, session_id)
-                VALUES (?, ?, ?)
+            // const db = await import('../../data/db.js');
+            // const stmt = db.default.prepare(`
+            //     INSERT INTO chat_history (role, content, session_id)
+            //     VALUES (?, ?, ?)
+            // `);
+            const { db } = await import('../../data/db.js');
+            const stmt = db.prepare(`
+            INSERT INTO chat_history (role, content, session_id)
+            VALUES (?, ?, ?)
             `);
-            
+
+
             // Save user message
             stmt.run('user', message, 'default-session');
             // Save Harper's response
@@ -117,9 +123,9 @@ export const handler = async (event, context) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     response,
-                    history: updatedHistory 
+                    history: updatedHistory
                 }),
             };
         } catch (error) {
