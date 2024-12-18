@@ -6,3 +6,10 @@
   publish = "public"
   port = 3000
   autoLaunch = true
+
+[functions]
+  external_node_modules = ["better-sqlite3"]
+  node_bundler = "esbuild"
+
+[build.processing.functions]
+  timeout = 60

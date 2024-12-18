@@ -100,6 +100,18 @@ export const handler = async (event, context) => {
                 { role: "model", parts: [{ text: response }] }
             ];
             
+            // Save all messages to chat_history
+            const db = await import('../../data/db.js');
+            const stmt = db.default.prepare(`
+                INSERT INTO chat_history (role, content, session_id)
+                VALUES (?, ?, ?)
+            `);
+            
+            // Save user message
+            stmt.run('user', message, 'default-session');
+            // Save Harper's response
+            stmt.run('assistant', response, 'default-session');
+
             return {
                 statusCode: 200,
                 headers: {
@@ -126,3 +138,4 @@ export const handler = async (event, context) => {
         };
     }
 };
+

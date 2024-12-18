@@ -22,6 +22,7 @@ const db = sqlite3(DB_PATH, {
 // Enable Write-Ahead Logging for better performance and reliability
 db.pragma('journal_mode = WAL');
 
+
 // Create our tables if they don't exist
 const initDb = () => {
     // Outputs table - for Harper's valuable sound engineering data
@@ -48,6 +49,7 @@ const initDb = () => {
     `);
 };
 
+
 // Initialize database
 try {
     initDb();
@@ -63,24 +65,24 @@ const queries = {
         INSERT INTO outputs (timestamp, type, content, metadata)
         VALUES (?, ?, ?, ?)
     `),
-    
+
     insertChatMessage: db.prepare(`
         INSERT INTO chat_history (role, content, session_id)
         VALUES (?, ?, ?)
     `),
-    
+
     getRecentOutputs: db.prepare(`
         SELECT * FROM outputs 
         ORDER BY timestamp DESC 
         LIMIT ?
     `),
-    
+
     getOutputsByType: db.prepare(`
         SELECT * FROM outputs 
         WHERE type = ? 
         ORDER BY timestamp DESC
     `),
-    
+
     getChatHistory: db.prepare(`
         SELECT * FROM chat_history 
         WHERE session_id = ? 

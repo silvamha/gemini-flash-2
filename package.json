@@ -6,7 +6,8 @@
     "dev": "netlify dev",
     "build": "netlify build",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "history": "node scripts/viewHistory.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
