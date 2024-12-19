@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { HARPER_CONTEXT } from "../../harper-context";
+// import { HARPER_CONTEXT } from "../../harper-context";
+import { HARPER_CONTEXT } from "../../harper-context.js";
 import outputService from '../../services/outputService.js';
 import { db, queries } from '../../data/db.js';
 
@@ -109,7 +110,12 @@ export const handler = async (event, context) => {
         const chat = model.startChat({ generationConfig, history });
         console.log("[DEBUG] Chat started.");
 
+  
+
+
         const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nUser message: ${message}`);
+
+        console.log("[DEBUG] Full payload being sent to Gemini API:", `${HARPER_CONTEXT}\n\nUser message: ${message}`);
         console.log("[DEBUG] Result received:", result);
 
         const response = await result.response.text();
