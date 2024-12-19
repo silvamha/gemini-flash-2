@@ -26,12 +26,65 @@ const safetySettings = [
 ];
 
 const generationConfig = {
-    temperature: 0.8,
+    temperature: 0.7,
     topP: 0.7,
     topK: 40,
     maxOutputTokens: 8192,
     responseMimeType: "text/plain",
 };
+
+// export const handler = async (event, context) => {
+//     if (event.httpMethod !== "POST") {
+//         return { statusCode: 405, body: "Method Not Allowed" };
+//     }
+
+//     try {
+//         const { message, history = [] } = JSON.parse(event.body);
+//         console.log('Incoming message:', message);
+
+//         const model = genAI.getGenerativeModel({
+//             model: "gemini-2.0-flash-exp",
+//             safetySettings,
+//             generationConfig
+//         });
+
+//         const chat = model.startChat({ generationConfig, history });
+
+//         const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nUser message: ${message}`);
+//         const response = await result.response.text();
+//         console.log('Harper response:', response);
+
+//         if (isSoundEngineeringContent(message) || isSoundEngineeringContent(response)) {
+//             const metadata = {
+//                 userMessage: message,
+//                 timestamp: new Date().toISOString(),
+//                 context: history.slice(-5)
+//             };
+
+//             await outputService.saveOutput('sound_engineering', response, metadata);
+//             console.log('Sound engineering output saved.');
+//         }
+
+//         const updatedHistory = [...history, 
+//             { role: "user", parts: [{ text: message }] },
+//             { role: "model", parts: [{ text: response }] }
+//         ];
+
+//         // Save to chat history
+//         queries.insertChatMessage.run('user', message, 'default-session');
+//         queries.insertChatMessage.run('assistant', response, 'default-session');
+
+//         return {
+//             statusCode: 200,
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ response, history: updatedHistory }),
+//         };
+
+//     } catch (error) {
+//         console.error("Chat error:", error);
+//         return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
+//     }
+// };
 
 export const handler = async (event, context) => {
     if (event.httpMethod !== "POST") {
@@ -40,20 +93,29 @@ export const handler = async (event, context) => {
 
     try {
         const { message, history = [] } = JSON.parse(event.body);
-        console.log('Incoming message:', message);
+        console.log("[DEBUG] Incoming message:", message); // Log the user's message
+        console.log("[DEBUG] Current history:", history); // Log the current chat history
 
+        // Create the generative model with safety settings
         const model = genAI.getGenerativeModel({
             model: "gemini-2.0-flash-exp",
             safetySettings,
             generationConfig
         });
 
+        console.log("[DEBUG] Model initialized with safety settings.");
+
+        // Start a chat and send the user message
         const chat = model.startChat({ generationConfig, history });
+        console.log("[DEBUG] Chat started.");
 
         const result = await chat.sendMessage(`${HARPER_CONTEXT}\n\nUser message: ${message}`);
-        const response = await result.response.text();
-        console.log('Harper response:', response);
+        console.log("[DEBUG] Result received:", result);
 
+        const response = await result.response.text();
+        console.log("[DEBUG] Harper response:", response);
+
+        // Check for sound engineering content
         if (isSoundEngineeringContent(message) || isSoundEngineeringContent(response)) {
             const metadata = {
                 userMessage: message,
@@ -62,17 +124,21 @@ export const handler = async (event, context) => {
             };
 
             await outputService.saveOutput('sound_engineering', response, metadata);
-            console.log('Sound engineering output saved.');
+            console.log("[DEBUG] Sound engineering output saved.");
         }
 
+        // Update the chat history
         const updatedHistory = [...history, 
             { role: "user", parts: [{ text: message }] },
             { role: "model", parts: [{ text: response }] }
         ];
 
-        // Save to chat history
+        console.log("[DEBUG] Updated history:", updatedHistory);
+
+        // Save messages to the database
         queries.insertChatMessage.run('user', message, 'default-session');
         queries.insertChatMessage.run('assistant', response, 'default-session');
+        console.log("[DEBUG] Messages saved to database.");
 
         return {
             statusCode: 200,
@@ -81,7 +147,7 @@ export const handler = async (event, context) => {
         };
 
     } catch (error) {
-        console.error("Chat error:", error);
+        console.error("[DEBUG] Chat error:", error); // Log errors
         return { statusCode: 500, body: JSON.stringify({ error: "Internal Server Error" }) };
     }
 };

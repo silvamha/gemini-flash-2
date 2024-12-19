@@ -16,6 +16,17 @@ try {
     chatHistory = [];
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    
+    // Load chat history from localStorage
+    const savedHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    savedHistory.forEach(({ parts, role }) => {
+        addMessage(parts[0].text, role === "user");
+    });
+});
+
+
 // Theme Toggle
 function toggleTheme() {
     document.body.classList.toggle('dark-theme');
@@ -32,21 +43,56 @@ function loadTheme() {
 }
 
 // Add a message to the chat
+// function addMessage(text, isUser = false) {
+//     const messageDiv = document.createElement('div');
+//     messageDiv.className = isUser ? 'message user-message' : 'message harper-message';
+//     messageDiv.textContent = text;
+//     messagesContainer.appendChild(messageDiv);
+//     messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+//     // Add to history with consistent format
+//     const message = {
+//         role: isUser ? "user" : "model",
+//         parts: [{ text }]
+//     };
+//     chatHistory.push(message);
+//     localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+// }
+
 function addMessage(text, isUser = false) {
+    const message = {
+        role: isUser ? "user" : "model",
+        parts: [{ text }]
+    };
+
+    console.log(`[DEBUG] addMessage called for: ${text}, isUser: ${isUser}`); // Debugging
+
+    // Prevent duplicates for user messages
+    if (isUser) {
+        const isDuplicate = chatHistory.some(
+            (msg) => JSON.stringify(msg.parts) === JSON.stringify(message.parts)
+        );
+        if (isDuplicate) {
+            console.log(`[DEBUG] Duplicate user message ignored: ${text}`);
+            return;
+        }
+    }
+
+    // Add message to UI
     const messageDiv = document.createElement('div');
     messageDiv.className = isUser ? 'message user-message' : 'message harper-message';
     messageDiv.textContent = text;
     messagesContainer.appendChild(messageDiv);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
-    // Add to history with consistent format
-    const message = {
-        role: isUser ? "user" : "model",
-        parts: [{ text }]
-    };
+
+    // Add to history and save to localStorage
     chatHistory.push(message);
     localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
 }
+
+
+
+
 
 // Show/hide loading indicator
 function setLoading(isLoading) {
@@ -54,42 +100,75 @@ function setLoading(isLoading) {
 }
 
 // Send message to Harper
+// async function sendMessage() {
+//     const message = userInput.value.trim();
+//     if (!message) return;
+
+//     // Add user message to chat
+//     addMessage(message, true);
+//     userInput.value = '';
+
+//     // Show loading indicator
+//     setLoading(true);
+
+//     try {
+//         const response = await fetch('/.netlify/functions/chat', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ message, history: chatHistory }),
+//         });
+
+//         const data = await response.json();
+        
+//         if (response.ok) {
+//             chatHistory = data.history;
+//             localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+//             addMessage(data.response);
+//         } else {
+//             addMessage('Sorry, I had trouble processing that. Please try again! ');
+//         }
+//     } catch (error) {
+//         console.error('Error:', error);
+//         addMessage('Oops! Something went wrong. Please try again! ');
+//     }
+
+//     setLoading(false);
+// }
+
 async function sendMessage() {
-    const message = userInput.value.trim();
-    if (!message) return;
+    const message = userInput.value.trim(); // Get the user's input from the text box.
+    if (!message) return; // Stop if the input is empty.
 
-    // Add user message to chat
-    addMessage(message, true);
-    userInput.value = '';
+    addMessage(message, true); // Display the user's message in the UI.
+    userInput.value = ''; // Clear the text box.
 
-    // Show loading indicator
-    setLoading(true);
+    setLoading(true); // Show the "loading" indicator.
 
     try {
         const response = await fetch('/.netlify/functions/chat', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message, history: chatHistory }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, history: chatHistory }), // Send user input and chat history.
         });
 
-        const data = await response.json();
-        
+        const data = await response.json(); // Parse the response from the server.
         if (response.ok) {
-            chatHistory = data.history;
-            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-            addMessage(data.response);
+            addMessage(data.response); // Display the server's response in the UI.
         } else {
-            addMessage('Sorry, I had trouble processing that. Please try again! ');
+            addMessage('An error occurred. Please try again.'); // Show an error message.
         }
     } catch (error) {
-        console.error('Error:', error);
-        addMessage('Oops! Something went wrong. Please try again! ');
+        console.error('Error:', error); // Log any unexpected issues.
+        addMessage('Oops! Something went wrong.'); // Display a fallback error message.
     }
 
-    setLoading(false);
+    setLoading(false); // Hide the "loading" indicator.
+    console.log("[DEBUG] Sending request to chat.js with message:", message);
+
 }
+
 
 // Clear chat history
 function clearChat() {
